@@ -7,11 +7,72 @@ using System.Threading;
 namespace Snake
 {
     class Program
+
+        
+
+
     {
         static void Main(string[] args)
         {
             Console.OutputEncoding = Encoding.UTF8;
             Console.SetWindowSize(80, 25);
+
+            ShowMainMenu();
+        }
+
+
+
+        static void ShowMainMenu()
+        {
+            bool isRunning = true;
+
+            while (isRunning)
+            {
+                Console.Clear();
+
+                
+                Console.ForegroundColor = ConsoleColor.Cyan;
+
+                Console.WriteLine("███████╗███╗   ██╗ █████╗ ██╗  ██╗███████╗");
+                Console.WriteLine("██╔════╝████╗  ██║██╔══██╗██║ ██╔╝██╔════╝");
+                Console.WriteLine("███████╗██╔██╗ ██║███████║█████╔╝ █████╗  ");
+                Console.WriteLine("╚════██║██║╚██╗██║██╔══██║██╔═██╗ ██╔══╝  ");
+                Console.WriteLine("███████║██║ ╚████║██║  ██║██║  ██╗███████╗");
+                Console.WriteLine("╚══════╝╚═╝  ╚═══╝╚═╝  ╚═╝╚═╝  ╚═╝╚══════╝");
+               
+                Console.ResetColor();
+
+                // 🔻 Меню
+                Console.ForegroundColor = ConsoleColor.Yellow;
+                Console.WriteLine();
+                Console.WriteLine("1. Alusta");
+                Console.WriteLine("2. Näita tulemusi");
+                Console.WriteLine("3. Välja");
+                Console.ResetColor();
+
+                Console.Write("\nValige: ");
+                var input = Console.ReadKey(true).Key;
+
+                switch (input)
+                {
+                    case ConsoleKey.D1:
+                        StartGame();
+                        break;
+                    case ConsoleKey.D2:
+                        PlayerResult.DisplayResults();
+                        break;
+                    case ConsoleKey.D3:
+                        isRunning = false;
+                        break;
+                }
+            }
+        }
+
+
+
+        static void StartGame()
+        {
+            Console.Clear();
 
             Walls walls = new Walls(80, 25);
             walls.Draw();
@@ -24,7 +85,6 @@ namespace Snake
             Point food = foodCreator.CreateFood();
             food.Draw();
 
-            
             Score score = new Score();
             Speed speed = new Speed();
             Level level = new Level();
@@ -41,10 +101,8 @@ namespace Snake
                 if (snake.Eat(food))
                 {
                     audioManager.PlayEatSound();
-
                     score.AddPoints(10);
 
-                   
                     if (score.GetPoints() % 50 == 0)
                     {
                         level.IncreaseLevel();
@@ -52,6 +110,7 @@ namespace Snake
                     }
 
                     food = foodCreator.CreateFood();
+                    Thread.Sleep(500);//пришлось добавить задержку, потому что еда могла появиться сразу на звейке и съедаться мгновенно, после чего новой еды не появлялось
                     food.Draw();
                 }
                 else
@@ -59,7 +118,6 @@ namespace Snake
                     snake.Move();
                 }
 
-                
                 score.Draw();
                 level.Draw();
 
@@ -73,23 +131,32 @@ namespace Snake
             }
 
             WriteGameOver();
-
-            
             Console.SetCursorPosition(0, 20);
-            Console.Write("Sisesta oma nimi: ");
-            string playerName = Console.ReadLine();
+            string playerName;
+
+            do
+            {
+                Console.Write(" Sisestage nimi(min 3 tahte): ");
+                playerName = Console.ReadLine();
+
+                if (string.IsNullOrWhiteSpace(playerName) || playerName.Length < 3)
+                {
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.WriteLine("Nimi on liiga lühike!");
+                    Console.ResetColor();
+                }
+                else
+                {
+                    break;
+                }
+            } while (true);
 
             PlayerResult playerResult = new PlayerResult(playerName, score.GetPoints());
             playerResult.Save();
 
-            
             PlayerResult.DisplayResults();
 
-            Console.ReadLine();
-        }
-
-
-        static void WriteGameOver()
+            static void WriteGameOver()
         {
             int xOffset = 25;
             int yOffset = 8;
@@ -110,5 +177,6 @@ namespace Snake
             Console.WriteLine(text);
         }
     }
-
 }
+}
+    

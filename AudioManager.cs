@@ -1,10 +1,10 @@
-﻿
+﻿//не смог разобраться с библиотеками для звука, поэтому сделал так
 class AudioManager
 
 {
     public void PlayEatSound()
     {
-        Console.Beep(1000, 100); // короткий звуковой сигнал
+        Console.Beep(1000, 100); 
     }
 
     public void PlayGameOverSound()

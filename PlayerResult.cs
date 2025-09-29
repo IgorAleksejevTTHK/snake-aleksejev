@@ -1,53 +1,77 @@
-﻿using System.IO;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 
-class PlayerResult
+namespace Snake
 {
-    public string Name { get; set; }
-    public int Score { get; set; }
-
-    private static string fileName = "scores.txt";
-
-    public PlayerResult(string name, int score)
+    public class PlayerResult
     {
-        Name = name;
-        Score = score;
-    }
+        public string Name { get; set; }
+        public int Score { get; set; }
 
-    public void Save()
-    {
-        File.AppendAllText(fileName, $"{Name};{Score}\n");
-    }
+        private static string fileName = "scores.txt";
+        private static int maxRecords = 10; // топ-10
 
-    public static List<PlayerResult> LoadAll()
-    {
-        var results = new List<PlayerResult>();
-        if (!File.Exists(fileName))
-            return results;
-
-        foreach (var line in File.ReadAllLines(fileName))
+        public PlayerResult(string name, int score)
         {
-            var parts = line.Split(';');
-            if (parts.Length == 2 && int.TryParse(parts[1], out int score))
+            Name = name;
+            Score = score;
+        }
+
+        public void Save()
+        {
+            if (Name.Length < 3)
             {
-                results.Add(new PlayerResult(parts[0], score));
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine("Nimi peaks olla vähemalt 3 tähemärki pikk!");
+                Console.ResetColor();
+                return;
             }
-        }
-        // Сортируем по убыванию очков
-        return results.OrderByDescending(r => r.Score).ToList();
-    }
 
-    public static void DisplayResults()
-    {
-        var results = LoadAll();
-        Console.Clear();
-        Console.WriteLine("Records:");
-        int rank = 1;
-        foreach (var r in results)
-        {
-            Console.WriteLine($"{rank}. {r.Name} - {r.Score}");
-            rank++;
+            var allResults = LoadAll();
+            allResults.Add(this);
+
+            var sortedResults = allResults
+                .OrderByDescending(r => r.Score)
+                .Take(maxRecords)
+                .ToList();
+
+            File.WriteAllLines(fileName, sortedResults.Select(r => $"{r.Name};{r.Score}"));
         }
-        Console.WriteLine("\nНажмите любую клавишу...");
-        Console.ReadKey();
+
+        public static List<PlayerResult> LoadAll()
+        {
+            var results = new List<PlayerResult>();
+
+            if (!File.Exists(fileName))
+                return results;
+
+            foreach (var line in File.ReadAllLines(fileName))
+            {
+                var parts = line.Split(';');
+                if (parts.Length == 2 && int.TryParse(parts[1], out int score))
+                {
+                    results.Add(new PlayerResult(parts[0], score));
+                }
+            }
+
+            return results;
+        }
+
+        public static void DisplayResults()
+        {
+            var results = LoadAll();
+            Console.Clear();
+            Console.WriteLine("=== Leaderboard===");
+            int rank = 1;
+            foreach (var r in results)
+            {
+                Console.WriteLine($"{rank}. {r.Name} - {r.Score}");
+                rank++;
+            }
+            Console.WriteLine("\nSisestage midagi et edasi minna...");
+            Console.ReadKey();
+        }
     }
-}   
+}

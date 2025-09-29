@@ -15,7 +15,7 @@
     public void IncreaseSpeed()
     {
         if (delay > 20)
-            delay -= 30; // увеличиваем скорость (уменьшаем задержку)
+            delay -= 10; // увеличиваем скорость (уменьшаем задержку)
     }
 
     public void Reset()
