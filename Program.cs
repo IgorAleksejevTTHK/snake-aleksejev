@@ -11,7 +11,8 @@ namespace Snake
             Console.OutputEncoding = Encoding.UTF8;
             Console.SetWindowSize(80, 25);
 
-            MainMenu.Show();  // Теперь вызов меню из другого класса
+            MainMenu.Show();
+            Console.CursorVisible = false;
         }
 
         public static void StartGame()
@@ -74,7 +75,7 @@ namespace Snake
                 }
             }
 
-            GameOverScreen.Show();  // Используем новый класс для вывода Game Over
+            GameOverScreen.Show();  
 
             Console.SetCursorPosition(0, 20);
             string playerName;
