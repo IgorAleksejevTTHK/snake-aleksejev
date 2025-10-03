@@ -74,7 +74,7 @@ namespace Snake
                     snake.HandleKey(key.Key);
                 }
             }
-
+            Console.Clear();
             GameOverScreen.Show();  
 
             Console.SetCursorPosition(0, 20);
@@ -82,6 +82,7 @@ namespace Snake
 
             do
             {
+                
                 Console.Write(" Sisestage nimi(min 3 tahte): ");
                 playerName = Console.ReadLine();
 
